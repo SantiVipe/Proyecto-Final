@@ -1,23 +1,15 @@
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
 
-    <!-- Bootstrap -->
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Tu CSS personalizado -->
-    <link href="assets/style.css" rel="stylesheet">
+    <link href="{{ asset('assets/style.css') }}" rel="stylesheet">
 
-    <!-- jQuery y Bootstrap JS -->
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </head>
 <body>
 
@@ -27,12 +19,13 @@
             <p>Inicie sesión para acceder.</p>
         </div>
     </div>
+
     <div class="main">
         <div class="col-md-6 col-sm-12">
             <div class="login-form">
-                <form method="POST" action="{{route('login.post')}}">
+                <form method="POST" action="{{ route('login.post') }}">
                     @csrf
-                    
+
                     @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul>
@@ -44,17 +37,18 @@
                     @endif
 
                     <div class="form-group">
-                        <label for ="identificacion">Nombre de Usuario(Identificacion)</label>
-                        <input type="text" class="form-control" id="identificacion" name="identificacion" placeholder="Nombre de Usuario" value="{{ old('identificacion')}}" requiered autofocus>
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" class="form-control" id="email" name="email"
+                            placeholder="Correo electrónico" value="{{ old('email') }}" required autofocus>
                     </div>
 
                     <div class="form-group">
                         <label for="password">Contraseña</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
+                        <input type="password" class="form-control" id="password" name="password"
+                            placeholder="Contraseña" required>
                     </div>
 
-                    <button type="submit" class="btn btn-black">Acceso</button>\
-                    <button type="button" href='' class="btn btn-black">Acceso</button>
+                    <button type="submit" class="btn btn-dark">Acceder</button>
                 </form>
             </div>
         </div>

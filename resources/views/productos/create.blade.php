@@ -1,53 +1,48 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Producto</title>
-</head>
-<body>
-    <h1>Crear Producto</h1>
+@extends('layouts.app')
 
-    @if ($errors->any())
-        <div style="color: red;">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+@section('content')
+<div class="main">
+    <div class="fixed-box">
+        <h3 class="text-center mb-4">Crear Producto</h3>
 
-    <form action="{{ route('productos.store') }}" method="POST">
-        @csrf
+        <form method="POST" action="{{ route('productos.store') }}">
+            @csrf
 
-        <div>
-            <label for="codigo">Código:</label>
-            <input type="text" id="codigo" name="codigo" value="{{ $codigoFormateado }}" readonly>
-        </div>
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-        <div>
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" value="{{ old('nombre') }}" required>
-        </div>
+            <div class="form-group">
+                <label for="nombre">Nombre del producto</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" value="{{ old('nombre') }}" required>
+            </div>
 
-        <div>
-            <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" name="descripcion">{{ old('descripcion') }}</textarea>
-        </div>
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <textarea class="form-control" id="descripcion" name="descripcion" rows="3">{{ old('descripcion') }}</textarea>
+            </div>
 
-        <div>
-            <label for="precio_venta">Precio de Venta:</label>
-            <input type="number" id="precio_venta" name="precio_venta" step="0.01" value="{{ old('precio_venta') }}" required>
-        </div>
+            <div class="form-group">
+                <label for="stock">Stock</label>
+                <input type="number" class="form-control" id="stock" name="stock" min="0" value="{{ old('stock') }}" required>
+            </div>
 
-        <div>
-            <label for="stock">Stock (opcional):</label>
-            <input type="number" id="stock" name="stock" value="{{ old('stock', 0) }}">
-        </div>
+            <div class="form-group">
+                <label for="precio_venta">Precio de venta</label>
+                <input type="number" class="form-control" id="precio_venta" name="precio_venta" min="0" step="0.01" value="{{ old('precio_venta') }}" required>
+            </div>
 
-        <button type="submit">Crear Producto</button>
-        <a href="{{ route('productos.index') }}">Cancelar</a>
-    </form>
-</body>
-</html>
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-success">Guardar Producto</button>
+                <a href="{{ route('productos.index') }}" class="btn btn-secondary">Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection

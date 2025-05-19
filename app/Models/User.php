@@ -10,29 +10,28 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    // Campos permitidos para asignación masiva
     protected $fillable = [
-        'identificacion',
         'nombre',
-        'rol',
-        'direccion',   // <--- NUEVO CAMPO
-        'telefono',    // <--- NUEVO CAMPO
+        'cedula',
+        'email',
+        'telefono',
+        'rol',      // agregamos rol
         'password',
     ];
 
-    // Campos que se ocultan al serializar (ej. en JSON)
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    // Casts
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed', // Laravel 10+ permite usar esto para hashear automáticamente
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
-    // Puedes agregar métodos adicionales si tenés roles, permisos, etc.
+    // Método para verificar si usuario es admin
+    public function isAdmin()
+    {
+        return $this->rol === 'admin';
+    }
 }

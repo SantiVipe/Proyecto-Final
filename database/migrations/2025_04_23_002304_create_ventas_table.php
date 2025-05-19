@@ -4,13 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('ventas', function (Blueprint $table) {
             $table->id();
             $table->string('consecutivo')->unique();
-            $table->foreignId('usuario_id')->constrained('users')->onDelete('cascade'); // Usuario con rol cliente
+            $table->foreignId('cliente_id')->constrained()->onDelete('cascade');
+            $table->foreignId('producto_id')->constrained()->onDelete('cascade');
+            $table->integer('cantidad');
             $table->date('fecha_venta');
             $table->decimal('total', 10, 2);
             $table->date('fecha_fin_garantia')->nullable();
@@ -18,6 +24,9 @@ return new class extends Migration {
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('ventas');
