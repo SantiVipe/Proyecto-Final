@@ -3,22 +3,41 @@
 namespace App\Http\Controllers;
 
 use App\Models\Venta;
+use App\Models\Cliente;
 use App\Models\Producto;
+use App\Models\DetalleVenta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminare\Support\Str;
+use Illuminate\Support\Str;
 
 class VentaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $ventas = Venta::all();
+        $ventas = Venta::with(['cliente', 'usuario'])
+            ->when($request->filled('buscar'), function ($query) use ($request) {
+                $buscar = $request->buscar;
+                $query->where(function($q) use ($buscar) {
+                    $q->whereHas('usuario', function ($q2) use ($buscar) {
+                        $q2->where('nombre', 'like', '%' . $buscar . '%');
+                    })
+                    ->orWhereHas('cliente', function ($q3) use ($buscar) {
+                        $q3->where('cedula', 'like', '%' . $buscar . '%');
+                    });
+                });
+            })
+            ->when($request->filled('fecha'), function ($query) use ($request) {
+                $query->whereDate('fecha_venta', $request->fecha);
+            })
+            ->orderBy('fecha_venta', 'desc')
+            ->paginate(10);
+
         return view('ventas.index', compact('ventas'));
     }
-
+    
     public function create()
     {
-        $clientes = \App\Models\Cliente::all();
+        $clientes = Cliente::all();
         $productos = Producto::all();
         return view('ventas.create', compact('clientes','productos'));
     }
@@ -26,146 +45,187 @@ class VentaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'cliente_id'=>'required|exists:clientes,id',
-            'fecha'=> 'required|date',
-            'productos'=> 'required|array',
-            'productos.*.producto_id'=>'required|exists:productos,id',
-            'productos.*.cantidad'=> 'required|integer|min:1',
-            'productos.*.precio_unitario' => 'required|numeric|min:0',
+            'cliente_id' => 'required|exists:clientes,id',
+            'productos' => 'required|array|min:1',
+            'productos.*.producto_id' => 'required|exists:productos,id',
+            'productos.*.cantidad' => 'required|numeric|min:1',
         ]);
 
         try {
             DB::beginTransaction();
 
-            $consecutivo= Str::uuid();
-
             $venta = new Venta();
-            $venta->consecutivo = $consecutivo;
+            $venta->consecutivo = Str::uuid();
             $venta->cliente_id = $request->cliente_id;
-            $venta->fecha = $request->fecha;
+            $venta->usuario_id = auth()->id();
+            $venta->fecha_venta = now(); 
+            $venta->fecha_fin_garantia = now()->addYears(2);
 
             $total = 0;
-            $productos_para_guardar = [];
+            $productos_guardados = [];
+
             foreach ($request->productos as $producto) {
-                $producto_db = Producto::find($producto['producto_id']);
-                if ($producto_db->stock < $product['cantidad']){
-                    throw new \Exception("No hay suficiente stock del producto {$producto_db->nombre}");
+                $producto_db = Producto::findOrFail($producto['producto_id']);
+
+                if ($producto_db->stock < $producto['cantidad']) {
+                    throw new \Exception("No hay suficiente stock para el producto {$producto_db->nombre}");
                 }
-                $subtotal = $producto['cantidad'] * $producto['precio_unitario'];
-                $total +=$subtotal;
-                $productos_para_guardar[]=['producto_id'=>$producto['producto_id'], 'cantidad'=> $producto['cantidad'], 'precio_unitario'=> $producto['precio_unitario'], 'subtotal'=> $subtotal,
-            ];
+
+                $precio_unitario = $producto_db->precio_venta;
+                $subtotal = $precio_unitario * $producto['cantidad'];
+
+                $productos_guardados[] = [
+                    'producto_id' => $producto_db->id,
+                    'nombre' => $producto_db->nombre,
+                    'precio_unitario' => $precio_unitario,
+                    'cantidad' => $producto['cantidad'],
+                    'subtotal' => $subtotal,
+                ];
+
+                // Descontar stock
                 $producto_db->stock -= $producto['cantidad'];
                 $producto_db->save();
+
+                $total += $subtotal;
             }
-            $venta->total =$total;
-            $venta->productos = json_encode($productos_para_guardar);
+
+            // Guardar productos y total
+            $venta->productos = $productos_guardados;
+            $venta->total = $total;
             $venta->save();
 
             DB::commit();
-            return redirect()->route('ventas.index')->with('success','Venta creada exitosamente');   
-        } catch (\Exception $e){
+
+            return redirect()->route('ventas.index')->with('success', 'Venta registrada exitosamente.');
+        } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error'=> $e->getMessage()])->withInput();
+            return back()->withErrors('Ocurrió un error al guardar la venta: ' . $e->getMessage())->withInput();
         }
-        
-    }
-    public function show(Venta $venta)
-    {
-        $venta->cliente;
-        return view('ventas.show', compact('venta'));
     }
 
-    public function edit(Venta $venta)
+
+
+    public function show($id)
     {
-        $clientes = \App\Models\Cliente::all();
-        $productos = Producto::all();
-        return view('ventas.edit', compact('venta', 'clientes', 'productos'));
+        // Obtener la venta
+        $venta = Venta::with('usuario', 'cliente')->findOrFail($id);
+
+        // Obtener todos los productos de la venta (el campo 'productos' es JSON decodificado en array)
+        $productosDetalles = $venta->productos; // ya es array si lo tienes cast como json o decodificas
+
+        // Obtener IDs de productos para cargar sus nombres de forma eficiente
+        $productosIds = collect($productosDetalles)->pluck('producto_id')->toArray();
+
+        // Traer los productos de la base, indexados por ID
+        $productos = Producto::whereIn('id', $productosIds)->get()->keyBy('id');
+
+        return view('ventas.show', compact('venta', 'productos'));
     }
 
     public function update(Request $request, Venta $venta)
     {
         $request->validate([
-            'cliente_id'=>'required|exist:clientes,id',
-            'fecha'=> 'required|date',
-            'productos.*.producto_id'=> 'required|exist:productos,id',
-            'productos.*.cantidad'=> 'required|integer|min:1',
-            'productos.*.precio_unitario'=> 'required|numeric|min:0',
+            'cliente_id' => 'required|exists:clientes,id',
+            'productos' => 'required|array|min:1',
+            'productos.*.producto_id' => 'required|exists:productos,id',
+            'productos.*.cantidad' => 'required|numeric|min:1',
+            // 'productos.*.precio_unitario' => 'required|numeric|min:0', // QUITAR VALIDACIÓN
         ]);
 
-        try{
+        try {
             DB::beginTransaction();
 
-            $venta->cliente_id =$request->cliente_id;
-            $venta->fecha = $request->fecha;
-
-            $total=0;
-            $productos_para_guardar=[];
-            foreach ($request->productos as $producto){
-                $producto_db = Producto::find($producto['producto_id']);
-                if ($producto_db->stock <$producto['cantidad']){
-                    throw new \Exception("No hay producto en existencia {$producto_db->nombre}");
-                }
-                $subtotal = $producto['cantidad']* $producto['precio_unitario'];
-                $total += $subtotal;
-
-                $productos_para_guardar[]=[
-                    'producto_id' => $producto['producto_id'],
-                    'cantidad'=> $producto['cantidad'],
-                    'precio_unitario'=>$producto['precio_unitario'],
-                    'subtotal'=> $subtotal,
-                ];
-
-                $producto_db->stock -= $producto['cantidad'];
-                $producto_db->save();
-            }
-
-            $productosAnteriores = json_decode($venta->productos, true);
-            if ($productosAnteriores){
-                foreach ($productosAnteriores as $productoAnterior){
+            // Primero devolver stock de productos anteriores
+            $productosAnteriores = $venta->productos; // ya es array
+            if ($productosAnteriores) {
+                foreach ($productosAnteriores as $productoAnterior) {
                     $productoAnteriorDb = Producto::find($productoAnterior['producto_id']);
-                    if ($productoAnteriorDb){
+                    if ($productoAnteriorDb) {
                         $productoAnteriorDb->stock += $productoAnterior['cantidad'];
                         $productoAnteriorDb->save();
                     }
                 }
             }
 
-            $venta->total =$total;
-            $venta->productos = json_encode($productos_para_guardar);
+            $venta->cliente_id = $request->cliente_id;
+            $venta->usuario_id = auth()->id();
+            $total = 0;
+            $productos_para_guardar = [];
+
+            // Luego descontar stock con nuevos productos
+            foreach ($request->productos as $producto) {
+                $producto_db = Producto::findOrFail($producto['producto_id']);
+
+                if ($producto_db->stock < $producto['cantidad']) {
+                    throw new \Exception("No hay suficiente stock para el producto {$producto_db->nombre}");
+                }
+
+                // Aquí obtengo el precio directo desde la base de datos
+                $precioUnitario = $producto_db->precio_venta;
+                $subtotal = $producto['cantidad'] * $precioUnitario;
+                $total += $subtotal;
+
+                $productos_para_guardar[] = [
+                    'producto_id' => $producto['producto_id'],
+                    'cantidad' => $producto['cantidad'],
+                    'precio_unitario' => $precioUnitario,
+                    'subtotal' => $subtotal,
+                ];
+
+                $producto_db->stock -= $producto['cantidad'];
+                $producto_db->save();
+            }
+
+            $venta->productos = $productos_para_guardar;
+            $venta->total = $total;
             $venta->save();
 
             DB::commit();
-            return redirect()->route('ventas.index')->with('success', 'Venta Actualizada Exitosamente');
-        } catch (\Exception $e){
+
+            return redirect()->route('ventas.index')->with('success', 'Venta actualizada exitosamente.');
+        } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error'=> $e->getMessage()])->withInput();
+            return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
 
-    public function destroy( Venta $venta)
+
+    public function edit($id)
+    {
+        $venta = Venta::findOrFail($id);
+        $clientes = Cliente::all();
+        $productos = Producto::all();
+
+        return view('ventas.edit', compact('venta', 'clientes', 'productos'));
+    }
+
+    public function destroy(Venta $venta)
     {
         try {
-            DB::beginTRansaction();
+            DB::beginTransaction();
 
-            $productosAnteriores = json_decode($venta->productos, true);
-            if ($productosAnteriores){
-                foreach($productosAnteriores as $producto){
+            $productosAnteriores = is_string($venta->productos)
+                ? json_decode($venta->productos, true)
+                : $venta->productos;
+
+            if ($productosAnteriores) {
+                foreach ($productosAnteriores as $producto) {
                     $productoDb = Producto::find($producto['producto_id']);
-                    if ($productoDb){
+                    if ($productoDb) {
                         $productoDb->stock += $producto['cantidad'];
                         $productoDb->save();
                     }
                 }
             }
+
             $venta->delete();
+
             DB::commit();
 
-            return redirect()->route('ventas.index')->with('success','Venta Eliminada Exitosamente');
-        } catch (\Exception $e){
+            return redirect()->route('ventas.index')->with('success', 'Venta eliminada correctamente.');
+        } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error'=> $e->getMessage()])->withInput();
+            return back()->withErrors(['error' => 'Error al eliminar la venta: ' . $e->getMessage()]);
         }
     }
 }
-

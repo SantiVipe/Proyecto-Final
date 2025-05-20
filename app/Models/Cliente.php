@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Cliente extends Model
 {
     use HasFactory;
-    protected $fillable = ['nombre','direccion','telefono'];
+    protected $fillable = ['nombre','cedula','direccion','telefono'];
     public function ventas():Hasmany
     {
         return $this->hasMany(Venta::class);

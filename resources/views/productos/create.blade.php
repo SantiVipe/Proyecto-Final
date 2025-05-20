@@ -39,8 +39,8 @@
             </div>
 
             <div class="d-flex justify-content-between mt-4">
-                <button type="submit" class="btn btn-success">Guardar Producto</button>
-                <a href="{{ route('productos.index') }}" class="btn btn-secondary">Volver</a>
+                <button type="submit" class="btn btn-success tt" title="Guardar Producto"><i class="fa-solid fa-floppy-disk"></i></button>
+                <a href="{{ route('productos.index') }}" class="btn btn-secondary tt" title="Volver"><i class="fa-solid fa-arrow-left"></i></a>
             </div>
         </form>
     </div>

@@ -10,12 +10,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Venta extends Model
 {
     use HasFactory;
-    protected $fillable = ['consecutivo','cliente_id','productos','cantidad','fecha_venta','total','fecha_fin_garantia'];
-    protected $casts = ['productos'=>'array','fecha_venta'=>'date'];
+    protected $fillable = ['consecutivo','cliente_id','usuario_id','productos','cantidad','fecha_venta','total','fecha_fin_garantia'];
+    protected $casts = ['productos'=>'array','fecha_venta'=>'timestamp'];
+
     public function cliente(): BelongsTo
     {
         return $this->belongsTo(Cliente::class);
     }
 
-
+    public function usuario(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

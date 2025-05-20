@@ -5,24 +5,26 @@
     <div class="fixed-box">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3 class="mb-0">Lista de Productos</h3>
-            <a href="{{ route('productos.create') }}" class="btn btn-success">Nuevo Producto</a>
+            <a href="{{ route('productos.create') }}" class="btn btn-success tt" title="Agregar Producto"><i class="fa-solid fa-shop"></i></a>
         </div>
 
         {{-- Formulario de búsqueda --}}
         <form method="GET" action="{{ route('productos.index') }}">
-            <div class="form-row align-items-center mb-2">
-                <div class="col-md-8 mb-2 mb-md-0">
-                    <input type="text" name="buscar" class="form-control" placeholder="Buscar por nombre o código..." value="{{ request('buscar') }}">
-                </div>
-                <div class="col-md-4 text-md-right">
-                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosAvanzados" aria-expanded="false" aria-controls="filtrosAvanzados">
-                        Filtros Avanzados
-                    </button>
-                    <button class="btn btn-outline-secondary" type="submit">Buscar</button>
-                    <a href="{{ route('productos.index') }}" class="btn btn-outline-danger">Limpiar</a>
-                </div>
+            <div class="form-group d-flex mb-2">
+                <input type="text" name="buscar" class="form-control mr-2" placeholder="Buscar por nombre o código..." value="{{ request('buscar') }}">
+                
+                <button class="btn btn-outline-primary mr-2 tt" type="button" data-bs-toggle="collapse" data-bs-target="#filtrosAvanzados" aria-expanded="false" aria-controls="filtrosAvanzados" title="Filtrar">
+                    <i class="fa-solid fa-filter"></i>
+                </button>
+                
+                <button class="btn btn-outline-secondary mr-2 tt" type="submit" title="Buscar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                
+                <a href="{{ route('productos.index') }}" class="btn btn-outline-danger tt" title="Limpiar Filtro">
+                    <i class="fa-solid fa-eraser"></i>
+                </a>
             </div>
-
             <div class="collapse {{ (request('stock_min') || request('stock_max') || request('precio_min') || request('precio_max')) ? 'show' : '' }}" id="filtrosAvanzados">
                 <div class="card card-body mb-3">
                     <div class="form-row">
@@ -83,12 +85,6 @@
                 </tbody>
             </table>
         </div>
-
-        @if ($productos instanceof \Illuminate\Pagination\LengthAwarePaginator)
-            <div class="mt-3 d-flex justify-content-center">
-                {{ $productos->appends(request()->all())->links() }}
-            </div>
-        @endif
     </div>
 </div>
 @endsection

@@ -1,55 +1,37 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=decive-width, initial-scale=1.0">
-    <title>Lista de Ventas</title>
-</head>
+@section('content')
+<div class="fixed-box bg-light p-4 rounded mx-auto" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+    <h2>Detalle de Venta #{{ $venta->id }}</h2>
 
-<body>
-    <h1>Lista de Ventas</h1>
+    <p><strong>Cliente:</strong> {{ $venta->cliente->nombre ?? 'N/A' }}</p>
+    <p><strong>Fecha de venta:</strong> {{ \Carbon\Carbon::parse($venta->fecha_venta)->format('d/m/Y H:i') }}</p>
+    <p><strong>Garantía válida hasta:</strong> 
+        {{ $venta->fecha_garantia ? \Carbon\Carbon::parse($venta->fecha_garantia)->format('d/m/Y') : 'No registrada' }}
+    </p>
+    <p><strong>Registrado por:</strong> {{ $venta->usuario->nombre ?? 'N/A' }}</p>
 
-    @if (session('success'))
-        <div style="color:green;">
-            {{ sesseion('success')}}
-        </div>
-    @endif
-
-    <a href="{{ route('ventas.create')}}">Crear Nueva Venta</a>
-    
-    <table>
-        <thead>
+    <table class="table table-bordered mt-3">
+        <thead class="thead-dark">
             <tr>
-                <th>Consecutivo</th>
-                <th>Fecha</th>
-                <th>Cliente</th>
-                <th>Total</th>
-                <th>Acciones</th>
+                <th>Producto</th>
+                <th>Precio Unitario</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($ventas as $venta)
-
+            @foreach($venta->productos as $detalle)
                 <tr>
-                    <td>{{ $venta->consecutivo}}</td>
-                    <td>{{ $venta->fecha}}</td>
-                    <td>{{ $venta->cliente->nombre}}</td>
-                    <td>{{ $venta->total}}</td>
-                    <td>
-                        <a href="{{ route('ventas.show', $venta)}}">Ver</a>
-                        <a href="{{ route('ventas.edit', $venta)}}" >Editar</a>
-                        <form action="{{ route('ventas.destroy'. $venta)}}" method="POST"
-                            style="display: inline-block;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                onclick="return confirm('¿Estás seguro de eliminar esta venta?')">Eliminar</button>
-                        </form>
-                    </td>
+                    <td>{{ $detalle['nombre'] ?? 'Producto eliminado' }}</td>
+                    <td>${{ number_format($detalle['precio_unitario'], 2) }}</td>
+                    <td>{{ $detalle['cantidad'] }}</td>
+                    <td>${{ number_format($detalle['subtotal'], 2) }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
-</body>
-</html>
+
+    <p class="mt-3"><strong>Total:</strong> ${{ number_format($venta->total, 2) }}</p>
+</div>
+@endsection

@@ -37,7 +37,7 @@ class ProductoController extends Controller
                 return $query->where('precio_venta', '<=', $precio_max);
             })
             ->orderBy('id', 'asc')  // Productos más nuevos primero
-            ->paginate(10);
+            ->get( );
 
         return view('productos.index', compact('productos'));
     }

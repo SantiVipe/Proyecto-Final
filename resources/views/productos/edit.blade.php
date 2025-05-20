@@ -45,8 +45,8 @@
             </div>
 
             <div class="d-flex justify-content-between mt-4">
-                <button type="submit" class="btn btn-success">Actualizar</button>
-                <a href="{{ route('productos.index') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-success ff" title="Actualizar Producto"><i class="fa-solid fa-arrow-up-from-bracket"></i></button>
+                <a href="{{ route('productos.index') }}" class="btn btn-secondary tt" title="Volver"><i class="fa-solid fa-arrow-left"></i></a>
             </div>
         </form>
     </div>
