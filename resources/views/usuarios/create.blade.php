@@ -1,45 +1,48 @@
-<DOCTYPE html>
-<html lang= "es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Usuario</title>
-</head>
-<body>
-    <h1>Crear Usuario</h1>
-    @if ($errors->any())
-        <div style="color= red;">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{$error}}</li>
-                @endforeach
-             </ul>
-         </div>
-    @endif
+@extends('layouts.app')
 
-    <form action="{{route('usuarios.store')}}" method="POST">
-        @csrf
+@section('content')
+<div class="main">
+    <div class="fixed-box">
+        <h3 class="text-center mb-4">Crear Usuario</h3>
 
-        <div>
-            <label for="identificacion">Identificacion:</label>
-            <input type="text" id="nombre" name="nombre" value="{{old('nombre')}}" require>
-        </div>
+        <form method="POST" action="{{ route('usuarios.store') }}">
+            @csrf
 
-        <div>
-            <label for="rol">Rol:</label>
-            <select id="rol" name="rol" require>
-                <option value="admin">Administrador</option>
-                <option value="usuario">Usuario</option>
-            </select>
-        </div>
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-        <div>
-            <label for="password">Contraseña</label>
-            <input type="password" id="password" name="password" require>
-        </div>
+            <div class="form-group">
+                <label for="nombre">Nombre del Usuario</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" value="{{ old('nombre') }}" required>
+            </div>
 
-        <button type="summit">Crear Usuario</button>
-        <a href="{{ route('usuarios.index')}}">Cancelar</a>
-    </form>
-</body>
-</html>
+            <div class="form-group">
+                <label for="cedula">Cédula del Usuario</label>
+                <input type="text" class="form-control" id="cedula" name="cedula" value="{{ old('cedula') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email del Usuario</label>
+                <input type="text" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Teléfono del Usuario</label>
+                <input type="text" class="form-control" id="telefono" name="telefono" value="{{ old('telefono') }}" required>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-success tt" title="Guardar Usuario"><i class="fa-solid fa-floppy-disk"></i></button>
+                <a href="{{ route('productos.index') }}" class="btn btn-secondary tt" title="Volver"><i class="fa-solid fa-arrow-left"></i></a>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -22,24 +23,31 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'cedula'=> 'required|unique:users',
             'nombre'=> 'required',
-            'rol'=> 'required|in:admin,usuario',
+            'cedula'=> 'required|unique:users',
             'email' => 'required|email|unique:users',
-            'password'=> 'required|min:8',
+            'telefono' => 'required|integer'
         ]);
+
+        $randomString = Str::random(4);
+        $specialChars = ['!', '@', '#', '$', '%', '&', '*'];
+        $randomChar = $specialChars[array_rand($specialChars)];
+
+        $baseEmail = explode('@', $request->email)[0];
+        $rawPassword = $baseEmail . $randomChar . $randomString;
 
         $usuario = new User();
         $usuario->cedula = $request->cedula;
         $usuario->nombre = $request->nombre;
         $usuario->email = $request->email;
-        $usuario->rol = $request->rol;
-        $usuario->password = Hash::make($request->password);
+        $usuario->rol = 'empleado';
+        $usuario->password = Hash::make($rawPassword);
         $usuario->save();
 
-        return redirect()->route('usuarios.index')->with('success','Usuario creado exitosamente.');
+        //mostrar la contraseña generada para comunicarla al usuario
+        return redirect()->route('usuarios.index')
+            ->with('success', 'Usuario creado exitosamente. Contraseña generada: ' . $rawPassword);
     }
-
     public function edit(User $usuario)
     {
         return view('usuarios.edit', compact('usuario'));

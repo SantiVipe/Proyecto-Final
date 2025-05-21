@@ -8,7 +8,7 @@ use App\Http\Controllers\VentaController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/',[AuthController::class, 'showLoginForm'])->name('login'); 
+Route::get('/login',[AuthController::class, 'showLoginForm'])->name('login'); 
 Route::post('/', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class,'logout'])->name('logout');
 Route::get('/test', function () {

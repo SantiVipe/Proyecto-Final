@@ -15,7 +15,7 @@ class User extends Authenticatable
         'cedula',
         'email',
         'telefono',
-        'rol',      // agregamos rol
+        'rol', 
         'password',
     ];
 
