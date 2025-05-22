@@ -147,14 +147,18 @@
                                 <li><a class="dropdown-item" href="{{ route('ventas.create') }}">Crear Venta</a></li>
                             </ul>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="usuariosDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">Usuarios</a>
-                            <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
-                                <li><a class="dropdown-item" href="{{ route('usuarios.index') }}">Listar Usuarios</a></li>
-                                <li><a class="dropdown-item" href="{{ route('usuarios.create') }}">Crear Usuarios</a></li>
-                            </ul>
-                        </li>
+                        @auth
+                            @if (Auth::user()->rol === 'admin')
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="usuariosDropdown" role="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">Usuarios</a>
+                                    <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
+                                        <li><a class="dropdown-item" href="{{ route('usuarios.index') }}">Listar Usuarios</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('usuarios.create') }}">Crear Usuarios</a></li>
+                                    </ul>
+                                </li>
+                            @endif
+                        @endauth
                     </ul>
 
                     <!-- Auth Links -->

@@ -14,19 +14,21 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // Validar entrada
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // Intentar login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/home');
+
+            if (Auth::user()->rol === 'admin') {
+                return redirect()->intended('/home');
+            } else {
+                return redirect()->route('empleado.dashboard'); // crea una ruta simple para ellos
+            }
         }
 
-        // Login fallido
         return back()->withErrors([
             'email' => 'Las credenciales no coinciden con ningún usuario.',
         ]);
