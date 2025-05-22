@@ -49,6 +49,20 @@ class VentaController extends Controller
             'productos' => 'required|array|min:1',
             'productos.*.producto_id' => 'required|exists:productos,id',
             'productos.*.cantidad' => 'required|numeric|min:1',
+        ], [
+            'cliente_id.required' => 'Debe seleccionar un cliente.',
+            'cliente_id.exists' => 'El cliente seleccionado no existe.',
+
+            'productos.required' => 'Debe agregar al menos un producto.',
+            'productos.array' => 'El formato de los productos no es válido.',
+            'productos.min' => 'Debe agregar al menos un producto.',
+
+            'productos.*.producto_id.required' => 'Debe seleccionar un producto.',
+            'productos.*.producto_id.exists' => 'El producto seleccionado no existe.',
+
+            'productos.*.cantidad.required' => 'Debe indicar la cantidad.',
+            'productos.*.cantidad.numeric' => 'La cantidad debe ser un número.',
+            'productos.*.cantidad.min' => 'La cantidad mínima es 1.',
         ]);
 
         try {
@@ -129,14 +143,26 @@ class VentaController extends Controller
             'productos' => 'required|array|min:1',
             'productos.*.producto_id' => 'required|exists:productos,id',
             'productos.*.cantidad' => 'required|numeric|min:1',
-            // 'productos.*.precio_unitario' => 'required|numeric|min:0', // QUITAR VALIDACIÓN
+        ], [
+            'cliente_id.required' => 'Debe seleccionar un cliente.',
+            'cliente_id.exists' => 'El cliente seleccionado no existe.',
+
+            'productos.required' => 'Debe agregar al menos un producto.',
+            'productos.array' => 'El formato de los productos no es válido.',
+            'productos.min' => 'Debe agregar al menos un producto.',
+
+            'productos.*.producto_id.required' => 'Debe seleccionar un producto.',
+            'productos.*.producto_id.exists' => 'El producto seleccionado no existe.',
+
+            'productos.*.cantidad.required' => 'Debe indicar la cantidad.',
+            'productos.*.cantidad.numeric' => 'La cantidad debe ser un número.',
+            'productos.*.cantidad.min' => 'La cantidad mínima es 1.',
         ]);
 
         try {
             DB::beginTransaction();
 
-            // Primero devolver stock de productos anteriores
-            $productosAnteriores = $venta->productos; // ya es array
+            $productosAnteriores = $venta->productos;
             if ($productosAnteriores) {
                 foreach ($productosAnteriores as $productoAnterior) {
                     $productoAnteriorDb = Producto::find($productoAnterior['producto_id']);
@@ -152,7 +178,6 @@ class VentaController extends Controller
             $total = 0;
             $productos_para_guardar = [];
 
-            // Luego descontar stock con nuevos productos
             foreach ($request->productos as $producto) {
                 $producto_db = Producto::findOrFail($producto['producto_id']);
 
@@ -160,7 +185,6 @@ class VentaController extends Controller
                     throw new \Exception("No hay suficiente stock para el producto {$producto_db->nombre}");
                 }
 
-                // Aquí obtengo el precio directo desde la base de datos
                 $precioUnitario = $producto_db->precio_venta;
                 $subtotal = $producto['cantidad'] * $precioUnitario;
                 $total += $subtotal;

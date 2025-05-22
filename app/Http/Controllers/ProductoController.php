@@ -60,6 +60,20 @@ class ProductoController extends Controller
             'descripcion' => 'nullable|string',
             'stock' => 'required|integer|min:0',
             'precio_venta' => 'required|numeric|min:0',
+        ], [
+            'nombre.required' => 'El nombre del producto es obligatorio.',
+            'nombre.string' => 'El nombre debe ser una cadena de texto.',
+            'nombre.max' => 'El nombre no debe exceder los 255 caracteres.',
+
+            'descripcion.string' => 'La descripción debe ser una cadena de texto.',
+
+            'stock.required' => 'El stock es obligatorio.',
+            'stock.integer' => 'El stock debe ser un número entero.',
+            'stock.min' => 'El stock no puede ser negativo.',
+
+            'precio_venta.required' => 'El precio de venta es obligatorio.',
+            'precio_venta.numeric' => 'El precio de venta debe ser un número.',
+            'precio_venta.min' => 'El precio de venta no puede ser negativo.',
         ]);
 
         $last = Producto::latest('id')->first();
@@ -98,21 +112,31 @@ class ProductoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Validación de los datos del formulario
         $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'stock' => 'required|integer|min:0',
             'precio_venta' => 'required|numeric|min:0',
+        ], [
+            'nombre.required' => 'El nombre del producto es obligatorio.',
+            'nombre.string' => 'El nombre debe ser una cadena de texto.',
+            'nombre.max' => 'El nombre no debe exceder los 255 caracteres.',
+
+            'descripcion.string' => 'La descripción debe ser una cadena de texto.',
+
+            'stock.required' => 'El stock es obligatorio.',
+            'stock.integer' => 'El stock debe ser un número entero.',
+            'stock.min' => 'El stock no puede ser negativo.',
+
+            'precio_venta.required' => 'El precio de venta es obligatorio.',
+            'precio_venta.numeric' => 'El precio de venta debe ser un número.',
+            'precio_venta.min' => 'El precio de venta no puede ser negativo.',
         ]);
 
-        // Buscar el producto por su ID
         $producto = Producto::findOrFail($id);
 
-        // Actualizar los campos permitidos
         $producto->update($request->only('nombre', 'descripcion', 'stock', 'precio_venta'));
 
-        // Redireccionar con mensaje de éxito
         return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente.');
     }
     /**

@@ -33,6 +33,16 @@ class ClienteController extends Controller
             'nombre' => 'required|string|max:255',
             'direccion' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:20',
+        ], [
+            'nombre.required' => 'El nombre del cliente es obligatorio.',
+            'nombre.string' => 'El nombre debe ser una cadena de texto.',
+            'nombre.max' => 'El nombre no debe superar los 255 caracteres.',
+
+            'direccion.string' => 'La dirección debe ser una cadena de texto.',
+            'direccion.max' => 'La dirección no debe superar los 255 caracteres.',
+
+            'telefono.string' => 'El teléfono debe ser una cadena de texto.',
+            'telefono.max' => 'El teléfono no debe superar los 20 caracteres.',
         ]);
 
         Cliente::create($request->all());
@@ -56,6 +66,16 @@ class ClienteController extends Controller
             'nombre' => 'required|string|max:255',
             'direccion' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:20',
+        ], [
+            'nombre.required' => 'El nombre del cliente es obligatorio.',
+            'nombre.string' => 'El nombre debe ser una cadena de texto.',
+            'nombre.max' => 'El nombre no debe superar los 255 caracteres.',
+
+            'direccion.string' => 'La dirección debe ser una cadena de texto.',
+            'direccion.max' => 'La dirección no debe superar los 255 caracteres.',
+
+            'telefono.string' => 'El teléfono debe ser una cadena de texto.',
+            'telefono.max' => 'El teléfono no debe superar los 20 caracteres.',
         ]);
 
         $cliente->update($request->all());

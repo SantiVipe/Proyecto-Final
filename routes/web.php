@@ -8,7 +8,7 @@ use App\Http\Controllers\VentaController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/login',[AuthController::class, 'showLoginForm'])->name('login'); 
+Route::get('/',[AuthController::class, 'showLoginForm'])->name('login'); 
 Route::post('/', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class,'logout'])->name('logout');
 Route::get('/test', function () {
@@ -54,6 +54,7 @@ Route::middleware(['auth', 'checkrole:admin'])->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('usuarios.index');
         Route::get('/crear', [UserController::class, 'create'])->name('usuarios.create');
         Route::post('/', [UserController::class, 'store'])->name('usuarios.store');
+        Route::get('/{usuario}',[UserController::class, 'show'])->name('usuarios.show');
         Route::get('/{usuario}/editar', [UserController::class, 'edit'])->name('usuarios.edit');
         Route::put('/{usuario}', [UserController::class, 'update'])->name('usuarios.update');
         Route::delete('/{usuario}', [UserController::class, 'destroy'])->name('usuarios.destroy');

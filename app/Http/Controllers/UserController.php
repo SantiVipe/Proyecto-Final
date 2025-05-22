@@ -22,12 +22,49 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre'=> 'required',
-            'cedula'=> 'required|unique:users',
-            'email' => 'required|email|unique:users',
-            'telefono' => 'required|integer'
-        ]);
+        $request->validate(
+            [
+                'nombre'=> [
+                    'required',
+                    'regex:/^[\pL\s]+$/u'
+                ],
+                'cedula'=> [
+                    'required',
+                    'unique:users',
+                    'numeric',
+                    'digits_between:6,12'
+                ],
+                'email' => [
+                    'required',
+                    'email',
+                    'unique:users',
+                    'regex:/^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,6}$/'
+                ],
+                'telefono' => [
+                    'required',
+                    'numeric',
+                    'digits_between:7,10'
+                ]
+            ],
+            [
+                'nombre.required' => 'El nombre es obligatorio.',
+                'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
+
+                'cedula.required' => 'La cédula es obligatoria.',
+                'cedula.unique' => 'La cédula ya está registrada.',
+                'cedula.numeric' => 'La cédula solo puede contener números.',
+                'cedula.digits_between' => 'La cédula debe tener entre 6 y 12 dígitos.',
+
+                'email.required' => 'El correo electrónico es obligatorio.',
+                'email.email' => 'El formato del correo no es válido.',
+                'email.unique' => 'El correo electrónico ya está registrado.',
+                'email.regex' => 'El correo debe ser del tipo usuario@dominio.com',
+
+                'telefono.required' => 'El teléfono es obligatorio.',
+                'telefono.numeric' => 'El teléfono solo puede contener números.',
+                'telefono.digits_between' => 'El teléfono debe tener entre 7 y 10 dígitos.'
+            ]
+        );
 
         $randomString = Str::random(4);
         $specialChars = ['!', '@', '#', '$', '%', '&', '*'];
@@ -40,6 +77,7 @@ class UserController extends Controller
         $usuario->cedula = $request->cedula;
         $usuario->nombre = $request->nombre;
         $usuario->email = $request->email;
+        $usuario->telefono = $request->telefono;
         $usuario->rol = 'empleado';
         $usuario->password = Hash::make($rawPassword);
         $usuario->save();
@@ -55,23 +93,66 @@ class UserController extends Controller
 
     public function update(Request $request, User $usuario)
     {
-        $request->validate([
-            'nombre'=>'required',
-            'rol'=> 'required|in:admin,usuario',
-            'email' => 'required|email|unique:users,email,' . $usuario->id,
-            'password'=> 'nullable|min:8',
-        ]);
+        $request->validate(
+            [
+                'nombre'=> [
+                    'required',
+                    'regex:/^[\pL\s]+$/u'
+                ],
+                'cedula'=> [
+                    'required',
+                    'unique:users',
+                    'numeric',
+                    'digits_between:6,12'
+                ],
+                'email' => [
+                    'required',
+                    'email',
+                    'unique:users',
+                    'regex:/^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,6}$/'
+                ],
+                'telefono' => [
+                    'required',
+                    'numeric',
+                    'digits_between:7,10'
+                ]
+            ],
+            [
+                'nombre.required' => 'El nombre es obligatorio.',
+                'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
+
+                'cedula.required' => 'La cédula es obligatoria.',
+                'cedula.unique' => 'La cédula ya está registrada.',
+                'cedula.numeric' => 'La cédula solo puede contener números.',
+                'cedula.digits_between' => 'La cédula debe tener entre 6 y 12 dígitos.',
+
+                'email.required' => 'El correo electrónico es obligatorio.',
+                'email.email' => 'El formato del correo no es válido.',
+                'email.unique' => 'El correo electrónico ya está registrado.',
+                'email.regex' => 'El correo debe ser del tipo usuario@dominio.com',
+
+                'telefono.required' => 'El teléfono es obligatorio.',
+                'telefono.numeric' => 'El teléfono solo puede contener números.',
+                'telefono.digits_between' => 'El teléfono debe tener entre 7 y 10 dígitos.'
+            ]
+        );
+
+        $randomString = Str::random(4);
+        $specialChars = ['!', '@', '#', '$', '%', '&', '*'];
+        $randomChar = $specialChars[array_rand($specialChars)];
+
+        $baseEmail = explode('@', $request->email)[0];
+        $rawPassword = $baseEmail . $randomChar . $randomString;
 
         $usuario->nombre = $request->nombre;
-        $usuario->rol = $request->rol;
+        $usuario->cedula = $request->cedula;
         $usuario->email = $request->email;
-
-        if ($request->filled('password')){
-            $usuario->password = Hash::make($request->password);
-        }
-
+        $usuario->telefono = $request->telefono;
+        $usuario->password = Hash::make($rawPassword);
         $usuario->save();
-        return redirect()->route('usuarios.index')->with('success','Usuario actualizado exitosamente.');
+
+        return redirect()->route('usuarios.index')
+            ->with('success', 'Usuario creado exitosamente. Contraseña generada: ' . $rawPassword);
     }
 
     public function destroy(User $usuario)

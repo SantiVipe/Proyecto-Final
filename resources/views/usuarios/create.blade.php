@@ -19,22 +19,22 @@
             @endif
 
             <div class="form-group">
-                <label for="nombre">Nombre del Usuario</label>
+                <label for="nombre">Nombre</label>
                 <input type="text" class="form-control" id="nombre" name="nombre" value="{{ old('nombre') }}" required>
             </div>
 
             <div class="form-group">
-                <label for="cedula">Cédula del Usuario</label>
+                <label for="cedula">Cédula</label>
                 <input type="text" class="form-control" id="cedula" name="cedula" value="{{ old('cedula') }}" required>
             </div>
 
             <div class="form-group">
-                <label for="email">Email del Usuario</label>
+                <label for="email">Email</label>
                 <input type="text" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
             </div>
 
             <div class="form-group">
-                <label for="telefono">Teléfono del Usuario</label>
+                <label for="telefono">Teléfono</label>
                 <input type="text" class="form-control" id="telefono" name="telefono" value="{{ old('telefono') }}" required>
             </div>
 
