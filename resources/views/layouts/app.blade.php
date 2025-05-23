@@ -6,13 +6,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Google Fonts / Nunito -->
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
-    <!-- Vite Assets -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
-    <!-- FontAwesome -->
     <script src="https://kit.fontawesome.com/71e9100085.js" crossorigin="anonymous"></script>
 
     <style>

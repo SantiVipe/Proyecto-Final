@@ -1,0 +1,21 @@
+body {
+    background-color: #fdf6f6;
+    color: #5e1b1b;
+    font-family: Arial, sans-serif;
+}
+
+.wrapper {
+    background-color: #fff0f0;
+    border: 1px solid #f0cccc;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.button {
+    background-color: #d44a4a !important;
+    border-radius: 6px;
+    color: white !important;
+    font-weight: bold;
+    padding: 12px 24px;
+    text-decoration: none;
+}

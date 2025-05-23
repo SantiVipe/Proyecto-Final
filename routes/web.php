@@ -7,6 +7,8 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 Route::get('/',[AuthController::class, 'showLoginForm'])->name('login'); 
 Route::post('/', [AuthController::class, 'login'])->name('login.post');
@@ -14,6 +16,12 @@ Route::post('/logout', [AuthController::class,'logout'])->name('logout');
 Route::get('/test', function () {
     return view('test');
 });
+
+Route::get('password/forgot', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 Route::prefix('productos')->group(function () {
     Route::get('/', [ProductoController::class, 'index'])->name('productos.index');

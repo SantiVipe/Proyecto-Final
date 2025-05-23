@@ -79,6 +79,7 @@ class UserController extends Controller
         $usuario->cedula = $request->cedula;
         $usuario->email = $request->email;
         $usuario->telefono = $request->telefono;
+        $usuario->rol = 'empleado';
         $usuario->password = Hash::make($request->password);
         $usuario->save();
 
@@ -101,15 +102,13 @@ class UserController extends Controller
                     'required',
                     'unique:users',
                     'numeric',
-                    'digits_between:6,12',
-                    Rule::unique('users')->ignore($usuarios->id),
+                    'digits_between:6,12'
                 ],
                 'email' => [
                     'required',
                     'email',
                     'unique:users',
-                    'regex:/^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,6}$/',
-                    Rule::unique('users')->ignore($usuarios->id),
+                    'regex:/^[\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,6}$/'
                 ],
                 'telefono' => [
                     'required',
