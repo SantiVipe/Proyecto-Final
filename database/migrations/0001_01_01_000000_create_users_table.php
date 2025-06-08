@@ -13,8 +13,9 @@ return new class extends Migration
             $table->string('cedula')->unique();
             $table->string('nombre');
             $table->string('email')->unique();
+            $table->string('direccion');
             $table->string('telefono')->nullable();
-            $table->string('rol')->default('usuario'); // Agregado campo rol
+            $table->string('rol')->default('usuario');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

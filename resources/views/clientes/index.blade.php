@@ -61,12 +61,6 @@
                 </tbody>
             </table>
         </div>
-
-        @if ($clientes instanceof \Illuminate\Pagination\LengthAwarePaginator)
-            <div class="mt-3 d-flex justify-content-center">
-                {{ $clientes->appends(request()->all())->links() }}
-            </div>
-        @endif
     </div>
 </div>
 @endsection

@@ -4,7 +4,6 @@
 <div class="main">
     <div class="fixed-box">
         <h3 class="text-center mb-4">Crear Usuario</h3>
-
         <form method="POST" action="{{ route('usuarios.store') }}">
             @csrf
 
@@ -39,13 +38,13 @@
             </div>
 
             <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="text" class="form-control" id="password" name="password" value="{{ old('password') }}" required>
+                <label for="direccion">Dirección</label>
+                <input type="text" class="form-control" id="direccion" name="direccion" value="{{ old('telefono')}}" required>
             </div>
 
             <div class="d-flex justify-content-between mt-4">
                 <button type="submit" class="btn btn-success tt" title="Guardar Usuario"><i class="fa-solid fa-floppy-disk"></i></button>
-                <a href="{{ route('productos.index') }}" class="btn btn-secondary tt" title="Volver"><i class="fa-solid fa-arrow-left"></i></a>
+                <a href="{{ route('usuarios.index') }}" class="btn btn-secondary tt" title="Volver"><i class="fa-solid fa-arrow-left"></i></a>
             </div>
         </form>
     </div>

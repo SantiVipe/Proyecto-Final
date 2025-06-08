@@ -17,6 +17,7 @@ class User extends Authenticatable implements CanResetPasswordContract
         'nombre',
         'cedula',
         'email',
+        'direccion',
         'telefono',
         'rol',
         'password',

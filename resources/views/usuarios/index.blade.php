@@ -5,7 +5,7 @@
     <div class="fixed-box">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3 class="mb-0">Lista de Usuarios</h3>
-            <a href="{{ route('usuarios.create') }}" class="btn btn-success tt" title="Agregar Usuario"><i class="fa-solid fa-shop"></i></a>
+            <a href="{{ route('usuarios.create') }}" class="btn btn-success tt" title="Agregar Usuario"><i class="fa-solid fa-user-plus"></i></a>
         </div>
         <form method="GET" action="{{ route('usuarios.index') }}">
             <div class="form-group d-flex mb-2">
