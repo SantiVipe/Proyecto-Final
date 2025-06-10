@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/',[AuthController::class, 'showLoginForm'])->name('login'); 
 Route::post('/', [AuthController::class, 'login'])->name('login.post');
@@ -70,3 +71,9 @@ Route::middleware(['auth', 'checkrole:admin'])->group(function () {
         Route::delete('/{usuario}', [UserController::class, 'destroy'])->name('usuarios.destroy');
     });
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/home', [App\Http\Controllers\AuthController::class, 'home'])->name('home');
+});
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

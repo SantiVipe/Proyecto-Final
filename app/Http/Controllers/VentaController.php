@@ -30,7 +30,7 @@ class VentaController extends Controller
                 $query->whereDate('fecha_venta', $request->fecha);
             })
             ->orderBy('fecha_venta', 'desc')
-            ->paginate(10);
+            ->get();
 
         return view('ventas.index', compact('ventas'));
     }

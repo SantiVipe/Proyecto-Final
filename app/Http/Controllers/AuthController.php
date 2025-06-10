@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Models\Venta;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -41,5 +43,41 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    public function home()
+    {
+        // Ventas por mes del año actual
+        $ventasPorMes = Venta::select(
+            DB::raw('MONTH(fecha_venta) as mes'),
+            DB::raw('SUM(total) as total_ventas')
+        )
+        ->whereYear('fecha_venta', date('Y'))
+        ->groupBy('mes')
+        ->orderBy('mes')
+        ->get();
+
+        // Top 5 productos más vendidos
+        $topProductos = DB::table('ventas')
+            ->select('productos->nombre as nombre', DB::raw('SUM(JSON_EXTRACT(productos, "$.cantidad")) as total_vendido'))
+            ->groupBy('nombre')
+            ->orderByDesc('total_vendido')
+            ->limit(5)
+            ->get();
+
+        // Ventas totales del día
+        $ventasHoy = Venta::whereDate('fecha_venta', today())->sum('total');
+
+        // Ventas totales del mes
+        $ventasMes = Venta::whereMonth('fecha_venta', now()->month)
+            ->whereYear('fecha_venta', now()->year)
+            ->sum('total');
+
+        return view('home', compact(
+            'ventasPorMes',
+            'topProductos',
+            'ventasHoy',
+            'ventasMes'
+        ));
     }
 }
