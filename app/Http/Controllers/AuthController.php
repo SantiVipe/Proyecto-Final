@@ -57,6 +57,12 @@ class AuthController extends Controller
         ->orderBy('mes')
         ->get();
 
+        // Preparar datos para el gráfico de ventas por mes
+        $ventasMesData = array_fill(0, 12, 0);
+        foreach ($ventasPorMes as $venta) {
+            $ventasMesData[$venta->mes - 1] = $venta->total_ventas;
+        }
+
         // Top 5 productos más vendidos
         $topProductos = DB::table('ventas')
             ->select('productos->nombre as nombre', DB::raw('SUM(JSON_EXTRACT(productos, "$.cantidad")) as total_vendido'))
@@ -73,11 +79,13 @@ class AuthController extends Controller
             ->whereYear('fecha_venta', now()->year)
             ->sum('total');
 
-        return view('home', compact(
-            'ventasPorMes',
-            'topProductos',
-            'ventasHoy',
-            'ventasMes'
-        ));
+        return view('home', [
+            'ventasPorMes' => $ventasPorMes,
+            'topProductos' => $topProductos,
+            'ventasHoy' => $ventasHoy,
+            'ventasMes' => $ventasMes,
+            'mesesLabels' => ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            'ventasMesData' => $ventasMesData
+        ]);
     }
 }

@@ -72,8 +72,4 @@ Route::middleware(['auth', 'checkrole:admin'])->group(function () {
     });
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/home', [App\Http\Controllers\AuthController::class, 'home'])->name('home');
-});
-
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
