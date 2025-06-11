@@ -3,34 +3,40 @@
 @section('content')
 <div class="main">
     <div class="fixed-box">
-        <h3 class="text-center mb-4">Detalles del Producto</h3>
+        <h3 class="mb-4">Detalles del Producto</h3>
 
-        <div class="mb-3">
-            <label class="font-weight-bold">Código:</label>
-            <p class="border p-2 rounded">{{ $producto->codigo }}</p>
+        <div class="form-group">
+            <label><strong>Código:</strong></label>
+            <p>{{ $producto->codigo }}</p>
+        </div>
+        <div class="form-group">
+            <label><strong>Nombre:</strong></label>
+            <p>{{ $producto->nombre }}</p>
+        </div>
+        <div class="form-group">
+            <label><strong>Descripción:</strong></label>
+            <p>{{ $producto->descripcion ?? 'No especificada' }}</p>
+        </div>
+        <div class="form-group">
+            <label><strong>Stock:</strong></label>
+            <p>{{ $producto->stock }}</p>
+        </div>
+        <div class="form-group">
+            <label><strong>Precio:</strong></label>
+            <p>${{ number_format($producto->precio_venta, 2) }}</p>
         </div>
 
-        <div class="mb-3">
-            <label class="font-weight-bold">Nombre:</label>
-            <p class="border p-2 rounded">{{ $producto->nombre }}</p>
+        <div class="mt-4 d-flex justify-content-between">
+            <a href="{{ route('productos.index') }}" class="btn btn-outline-secondary tt" title="Volver"><i class="fa-solid fa-arrow-left"></i></a>
+            <div>
+                <a href="{{ route('productos.edit', $producto) }}" class="btn btn-warning tt" title="Editar"><i class="fa-solid fa-pencil"></i></a>
+                <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="d-inline-block" onsubmit="return confirm('¿Seguro que deseas eliminar este producto?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger tt" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label class="font-weight-bold">Descripción:</label>
-            <p class="border p-2 rounded">{{ $producto->descripcion ?? 'N/A' }}</p>
-        </div>
-
-        <div class="mb-3">
-            <label class="font-weight-bold">Stock:</label>
-            <p class="border p-2 rounded">{{ $producto->stock }}</p>
-        </div>
-
-        <div class="mb-4">
-            <label class="font-weight-bold">Precio:</label>
-            <p class="border p-2 rounded">${{ number_format($producto->precio_venta, 2) }}</p>
-        </div>
-
-        <a href="{{ route('productos.index') }}" class="btn btn-secondary btn-block">Volver</a>
     </div>
 </div>
 @endsection

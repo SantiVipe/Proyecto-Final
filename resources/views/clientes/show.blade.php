@@ -23,13 +23,13 @@
         </div>
 
         <div class="mt-4 d-flex justify-content-between">
-            <a href="{{ route('clientes.index') }}" class="btn btn-outline-secondary">Volver</a>
+            <a href="{{ route('clientes.index') }}" class="btn btn-outline-secondary tt" title="Volver"><i class="fa-solid fa-arrow-left"></i></a>
             <div>
-                <a href="{{ route('clientes.edit', $cliente) }}" class="btn btn-warning">Editar</a>
+                <a href="{{ route('clientes.edit', $cliente) }}" class="btn btn-warning" title="Editar"><i class="fa-solid fa-pencil"></i></a>
                 <form action="{{ route('clientes.destroy', $cliente) }}" method="POST" class="d-inline-block" onsubmit="return confirm('¿Seguro que deseas eliminar este cliente?')">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                    <button type="submit" class="btn btn-danger tt" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                 </form>
             </div>
         </div>
